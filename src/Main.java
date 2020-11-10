@@ -39,7 +39,7 @@ public class Main extends Application {
         final TextField screen  = createScreen();
         final TilePane  buttons = createButtons();
 
-        stage.setTitle("Calc");
+        stage.setTitle("Calculadora Java");
         stage.initStyle(StageStyle.UTILITY);
         stage.setResizable(false);
         stage.setScene(new Scene(createLayout(screen, buttons)));
@@ -47,9 +47,9 @@ public class Main extends Application {
     }
 
     private VBox createLayout(TextField screen, TilePane buttons) {
-        final VBox layout = new VBox(20);
+        final VBox layout = new VBox(30);
         layout.setAlignment(Pos.CENTER);
-        layout.setStyle("-fx-background-color: chocolate; -fx-padding: 20; -fx-font-size: 20;");
+        layout.setStyle("-fx-background-color: LIGHT_GRAY; -fx-padding: 20; -fx-font-size: 20;");
         layout.getChildren().setAll(screen, buttons);
         handleAccelerators(layout);
         screen.prefWidthProperty().bind(buttons.widthProperty());
@@ -70,7 +70,7 @@ public class Main extends Application {
 
     private TextField createScreen() {
         final TextField screen = new TextField();
-        screen.setStyle("-fx-background-color: aquamarine;");
+        screen.setStyle("-fx-background-color: blue;");
         screen.setAlignment(Pos.CENTER_RIGHT);
         screen.setEditable(false);
         screen.textProperty().bind(Bindings.format("%.0f", value));
@@ -155,7 +155,7 @@ public class Main extends Application {
     }
 
     private void makeClearButton(Button button) {
-        button.setStyle("-fx-base: mistyrose;");
+        button.setStyle("-fx-base: red;");
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
