@@ -28,7 +28,7 @@ public class Main extends Application {
     private DoubleProperty stackValue = new SimpleDoubleProperty();
     private DoubleProperty value = new SimpleDoubleProperty();
 
-    private enum Op { NOOP, ADD, SUBTRACT, MULTIPLY, DIVIDE }
+    private enum Op { NOOP, Adicionar, Subtrair, Multiplicar, Dividir }
 
     private Op curOp   = Op.NOOP;
     private Op stackOp = Op.NOOP;
@@ -36,23 +36,23 @@ public class Main extends Application {
     public static void main(String[] args) { launch(args); }
 
     @Override public void start(Stage stage) {
-        final TextField screen  = createScreen();
-        final TilePane  buttons = createButtons();
+        final TextField input  = inputValor();
+        final TilePane botoes = criarBotoes();
 
         stage.setTitle("Calculadora Java");
         stage.initStyle(StageStyle.UTILITY);
         stage.setResizable(false);
-        stage.setScene(new Scene(createLayout(screen, buttons)));
+        stage.setScene(new Scene(criarLayout(input, botoes)));
         stage.show();
     }
 
-    private VBox createLayout(TextField screen, TilePane buttons) {
+    private VBox criarLayout(TextField input, TilePane botoes) {
         final VBox layout = new VBox(30);
         layout.setAlignment(Pos.CENTER);
         layout.setStyle("-fx-background-color: LIGHT_GRAY; -fx-padding: 20; -fx-font-size: 20;");
-        layout.getChildren().setAll(screen, buttons);
+        layout.getChildren().setAll(input, botoes);
         handleAccelerators(layout);
-        screen.prefWidthProperty().bind(buttons.widthProperty());
+        input.prefWidthProperty().bind(botoes.widthProperty());
         return layout;
     }
 
@@ -68,61 +68,61 @@ public class Main extends Application {
         });
     }
 
-    private TextField createScreen() {
-        final TextField screen = new TextField();
-        screen.setStyle("-fx-background-color: blue;");
-        screen.setAlignment(Pos.CENTER_RIGHT);
-        screen.setEditable(false);
-        screen.textProperty().bind(Bindings.format("%.0f", value));
-        return screen;
+    private TextField inputValor() {
+        final TextField input = new TextField();
+        input.setStyle("-fx-background-color: gray;");
+        input.setAlignment(Pos.CENTER_RIGHT);
+        input.setEditable(false);
+        input.textProperty().bind(Bindings.format("%.0f", value));
+        return input;
     }
 
-    private TilePane createButtons() {
-        TilePane buttons = new TilePane();
-        buttons.setVgap(7);
-        buttons.setHgap(7);
-        buttons.setPrefColumns(template[0].length);
+    private TilePane criarBotoes() {
+        TilePane botoes = new TilePane();
+        botoes.setVgap(7);
+        botoes.setHgap(7);
+        botoes.setPrefColumns(template[0].length);
         for (String[] r: template) {
             for (String s: r) {
-                buttons.getChildren().add(createButton(s));
+                botoes.getChildren().add(criarBotao(s));
             }
         }
-        return buttons;
+        return botoes;
     }
 
-    private Button createButton(final String s) {
-        Button button = makeStandardButton(s);
+    private Button criarBotao(final String s) {
+        Button botao = botoesPadrao(s);
 
         if (s.matches("[0-9]")) {
-            makeNumericButton(s, button);
+            botaoNumerico(s, botao);
         } else {
-            final ObjectProperty<Op> triggerOp = determineOperand(s);
+            final ObjectProperty<Op> triggerOp = determinarOperador(s);
             if (triggerOp.get() != Op.NOOP) {
-                makeOperandButton(button, triggerOp);
+                botoesOperacoes(botao, triggerOp);
             } else if ("c".equals(s)) {
-                makeClearButton(button);
+                botaoLimpar(botao);
             } else if ("=".equals(s)) {
-                makeEqualsButton(button);
+                botaoIgual(botao);
             }
         }
 
-        return button;
+        return botao;
     }
 
-    private ObjectProperty<Op> determineOperand(String s) {
-        final ObjectProperty<Op> triggerOp = new SimpleObjectProperty<>(Op.NOOP);
+    private ObjectProperty<Op> determinarOperador(String s) {
+        final ObjectProperty<Op> operador = new SimpleObjectProperty<>(Op.NOOP);
         switch (s) {
-            case "+": triggerOp.set(Op.ADD);      break;
-            case "-": triggerOp.set(Op.SUBTRACT); break;
-            case "*": triggerOp.set(Op.MULTIPLY); break;
-            case "/": triggerOp.set(Op.DIVIDE);   break;
+            case "+": operador.set(Op.Adicionar);      break;
+            case "-": operador.set(Op.Subtrair); break;
+            case "*": operador.set(Op.Multiplicar); break;
+            case "/": operador.set(Op.Dividir);   break;
         }
-        return triggerOp;
+        return operador;
     }
 
-    private void makeOperandButton(Button button, final ObjectProperty<Op> triggerOp) {
-        button.setStyle("-fx-base: lightgray;");
-        button.setOnAction(new EventHandler<ActionEvent>() {
+    private void botoesOperacoes(Button botao, final ObjectProperty<Op> triggerOp) {
+        botao.setStyle("-fx-base: lightgray;");
+        botao.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 curOp = triggerOp.get();
@@ -130,16 +130,16 @@ public class Main extends Application {
         });
     }
 
-    private Button makeStandardButton(String s) {
-        Button button = new Button(s);
-        button.setStyle("-fx-base: beige;");
-        accelerators.put(s, button);
-        button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        return button;
+    private Button botoesPadrao(String s) {
+        Button botao = new Button(s);
+        botao.setStyle("-fx-base: beige;");
+        accelerators.put(s, botao);
+        botao.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        return botao;
     }
 
-    private void makeNumericButton(final String s, Button button) {
-        button.setOnAction(new EventHandler<ActionEvent>() {
+    private void botaoNumerico(final String s, Button botao) {
+        botao.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (curOp == Op.NOOP) {
@@ -154,9 +154,9 @@ public class Main extends Application {
         });
     }
 
-    private void makeClearButton(Button button) {
-        button.setStyle("-fx-base: red;");
-        button.setOnAction(new EventHandler<ActionEvent>() {
+    private void botaoLimpar(Button botao) {
+        botao.setStyle("-fx-base: red;");
+        botao.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 value.set(0);
@@ -164,16 +164,36 @@ public class Main extends Application {
         });
     }
 
-    private void makeEqualsButton(Button button) {
-        button.setStyle("-fx-base: ghostwhite;");
-        button.setOnAction(new EventHandler<ActionEvent>() {
+    private void botaoIgual(Button botao) {
+        botao.setStyle("-fx-base: ghostwhite;");
+        botao.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 switch (stackOp) {
-                    case ADD:      value.set(stackValue.get() + value.get()); break;
-                    case SUBTRACT: value.set(stackValue.get() - value.get()); break;
-                    case MULTIPLY: value.set(stackValue.get() * value.get()); break;
-                    case DIVIDE:   value.set(stackValue.get() / value.get()); break;
+                    case Adicionar:
+                        try{
+                            value.set(stackValue.get() + value.get()); break;
+                        }catch(Throwable error){
+                            System.out.println("Erro: " + error);
+                        }
+                    case Subtrair:
+                        try{
+                            value.set(stackValue.get() - value.get()); break;
+                        }catch(Throwable error){
+                            System.out.println("Erro: " + error);
+                        }
+                    case Multiplicar:
+                        try{
+                            value.set(stackValue.get() * value.get()); break;
+                        }catch(Throwable error){
+                            System.out.println("Erro: " + error);
+                        }
+                    case Dividir:
+                        try{
+                            value.set(stackValue.get() / value.get()); break;
+                        }catch(Throwable error){
+                            System.out.println("Erro: " + error);
+                        }
                 }
             }
         });
